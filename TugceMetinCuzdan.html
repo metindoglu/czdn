@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Altın Fiyatları ve Cüzdanım</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2, h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #f0f2f5;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        input[type='number'] {
+            width: 80px;
+            padding: 6px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        #totalDeposit {
+            font-size: 44px;
+            font-weight: bold;
+            color: #f30909;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Toplam Mevduat</h1>
+        <h2 id="totalDeposit">0.00 TRY</h2>
+    </div>
+
+    <div class="card">
+        <h2>Cüzdanım</h2>
+        <table id="walletTable">
+            <tr><th>Ürün</th><th>Miktar</th></tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Canlı Altın Fiyatları</h2>
+        <table id="priceTable">
+            <tr><th>Ürün</th><th>Alış (TRY)</th><th>Satış (TRY)</th></tr>
+        </table>
+    </div>
+
+    <script>
+        const url = "https://canlipiyasalar.haremaltin.com/tmp/altin.json?dil_kodu=tr";
+        const walletItems = {
+            "CEYREK_ESKI": 95,
+            "ALTIN": 40,
+            "AYAR22": 31,
+            "YARIM_ESKI": 1,
+            "TEK_ESKI": 8,
+            "ATA_ESKI": 7,
+            "EURTRY": 900,
+            "USDTRY": 600,
+            "BILEZIK": 115
+        };
+        let prices = {};
+
+        function updateTables() {
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    prices = data.data;
+
+                    // BILEZIK inherits AYAR22 values
+                    if (prices["AYAR22"]) {
+                        prices["BILEZIK"] = {
+                            alis: prices["AYAR22"].alis,
+                            satis: prices["AYAR22"].satis
+                        };
+                    }
+
+                    const priceTable = document.getElementById("priceTable");
+                    const walletTable = document.getElementById("walletTable");
+
+                    priceTable.innerHTML = "<tr><th>Ürün</th><th>Alış (TRY)</th><th>Satış (TRY)</th></tr>";
+                    walletTable.innerHTML = "<tr><th>Ürün</th><th>Miktar</th></tr>";
+
+                    for (const item in walletItems) {
+                        if (prices[item]) {
+                            const priceRow = document.createElement("tr");
+                            priceRow.innerHTML = `<td>${item}</td><td>${prices[item].alis}</td><td>${prices[item].satis}</td>`;
+                            priceTable.appendChild(priceRow);
+
+                            const walletRow = document.createElement("tr");
+                            walletRow.innerHTML = `<td>${item}</td><td><input type="number" id="qty_${item}" value="${walletItems[item]}" onchange="calculateTotal()"></td>`;
+                            walletTable.appendChild(walletRow);
+                        }
+                    }
+
+                    calculateTotal();
+                });
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            for (const item in walletItems) {
+                const qty = parseFloat(document.getElementById(`qty_${item}`).value) || 0;
+                const alis = prices[item] ? parseFloat(prices[item].alis) : 0;
+                total += qty * alis;
+            }
+            document.getElementById("totalDeposit").innerText = total.toFixed(2) + " TRY";
+        }
+
+        updateTables();
+        setInterval(updateTables, 5000);
+    </script>
+</body>
+</html>
