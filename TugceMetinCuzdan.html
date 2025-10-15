@@ -95,7 +95,10 @@
       "USDTRY": 600,
       "BILEZIK": 115,
       "GUMUSTRY":1509,
-      "GETIRALTIN":22.53
+      "GETIRALTIN":22.53,
+      "PLATIN":100,
+      "GETIRALTIN-METIN":54.89,
+      "GUMUSTRY-METIN":3000
     };
     let prices = {};
 
@@ -116,8 +119,27 @@
             alis: prices["ALTIN"].alis,
             satis: prices["ALTIN"].satis
           };
+          prices["GETIRALTIN-METIN"] = {
+            alis: prices["ALTIN"].alis,
+            satis: prices["ALTIN"].satis
+          };
                         
         }
+        if (prices["PLATIN"]) {
+          prices["PLATIN"] = {
+            alis: prices["PLATIN"].satis*prices["USDTRY"].alis/1000,
+            satis: prices["PLATIN"].satis*prices["USDTRY"].satis/1000
+          };
+                        
+        }
+        if (prices["GUMUSTRY"]) {
+          prices["GUMUSTRY-METIN"] = {
+            alis: prices["GUMUSTRY"].alis,
+            satis: prices["GUMUSTRY"].satis
+          };
+        
+        }
+
 
         const walletContainer = document.getElementById("walletContainer");
         const priceContainer = document.getElementById("priceContainer");
