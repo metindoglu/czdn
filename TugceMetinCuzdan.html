@@ -114,14 +114,18 @@
             satis: prices["AYAR22"].satis
           };
         }
-        if (prices["ALTIN"]) {
+        if (prices["KULCEALTIN"]) {
+         prices["GRAMALTIN"] = {
+           alis: prices["KULCEALTIN"].alis,
+           satis: prices["KULCEALTIN"].satis
+         };
           prices["GETIRALTIN"] = {
-            alis: prices["ALTIN"].alis,
-            satis: prices["ALTIN"].satis
+            alis: prices["KULCEALTIN"].alis*0.95,
+            satis: prices["KULCEALTIN"].satis*0.95
           };
           prices["GETIRALTIN-METIN"] = {
-            alis: prices["ALTIN"].alis,
-            satis: prices["ALTIN"].satis
+            alis: prices["KULCEALTIN"].alis*0.95,
+            satis: prices["KULCEALTIN"].satis*0.95
           };
                         
         }
